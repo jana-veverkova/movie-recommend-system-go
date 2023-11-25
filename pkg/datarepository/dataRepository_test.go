@@ -14,53 +14,53 @@ func TestFormatData(t *testing.T) {
 		{"2", "539", "3", "868246262", "Sleepless in Seattle (1993)", "Comedy|Drama|Romance"},
 		{"3", "540", "2.5", "868246262", "A (1993)", "Romance"},
 	}
-	expected := dataSet{
-		movies: map[string]movie{
+	expected := DataSet{
+		Movies: map[string]Movie{
 			"292": {
-				movieId: "292",
-				year: 1995,
-				title: "Outbreak",
-				genres: []string{"Action", "Drama", "Sci-Fi", "Thriller"},
+				MovieId: "292",
+				Year:    1995,
+				Title:   "Outbreak",
+				Genres:  []string{"Action", "Drama", "Sci-Fi", "Thriller"},
 			},
 			"589": {
-				movieId: "589",
-				year: 1991,
-				title: "Terminator 2: Judgment Day",
-				genres: []string{"Action", "Sci-Fi"},
+				MovieId: "589",
+				Year:    1991,
+				Title:   "Terminator 2: Judgment Day",
+				Genres:  []string{"Action", "Sci-Fi"},
 			},
 			"539": {
-				movieId: "539",
-				year: 1993,
-				title: "Sleepless in Seattle",
-				genres: []string{"Comedy","Drama","Romance"},
+				MovieId: "539",
+				Year:    1993,
+				Title:   "Sleepless in Seattle",
+				Genres:  []string{"Comedy", "Drama", "Romance"},
 			},
 			"540": {
-				movieId: "540",
-				year: 1993,
-				title: "A",
-				genres: []string{"Romance"},
+				MovieId: "540",
+				Year:    1993,
+				Title:   "A",
+				Genres:  []string{"Romance"},
 			},
 		},
-		ratings: map[string]rating{
+		Ratings: map[string]Rating{
 			"1/292": {
-				movieId: "292",
-				userId: "1",
-				rating: 5,
+				MovieId: "292",
+				UserId:  "1",
+				Value:  5,
 			},
 			"1/589": {
-				movieId: "589",
-				userId: "1",
-				rating: 5,
+				MovieId: "589",
+				UserId:  "1",
+				Value:  5,
 			},
 			"2/539": {
-				movieId: "539",
-				userId: "2",
-				rating: 3,
+				MovieId: "539",
+				UserId:  "2",
+				Value:  3,
 			},
 			"3/540": {
-				movieId: "540",
-				userId: "3",
-				rating: 2.5,
+				MovieId: "540",
+				UserId:  "3",
+				Value:  2.5,
 			},
 		},
 	}

@@ -9,37 +9,37 @@ import (
 	"github.com/pkg/errors"
 )
 
-type dataSet struct {
-	movies  map[string]movie
-	ratings map[string]rating
+type DataSet struct {
+	Movies  map[string]Movie
+	Ratings map[string]Rating
 }
 
-type movie struct {
-	movieId string
-	year int
-	title   string
-	genres  []string
+type Movie struct {
+	MovieId string
+	Year    int
+	Title   string
+	Genres  []string
 }
 
-type rating struct {
-	movieId string
-	userId  string
-	rating  float32
+type Rating struct {
+	MovieId string
+	UserId  string
+	Value   float32
 }
 
-func GetData(dataSource string) (*dataSet, error) {
+func GetData(dataSource string) (*DataSet, error) {
 	dataSourceUrl := dataSource
-	
+
 	switch dataSource {
-    case "train":
-        dataSourceUrl = "data/trainTest/train.csv"
-    case "test":
-        dataSourceUrl = "data/trainTest/test.csv"
-    case "edx":
-        dataSourceUrl = "data/processed/edx.csv"
+	case "train":
+		dataSourceUrl = "data/trainTest/train.csv"
+	case "test":
+		dataSourceUrl = "data/trainTest/test.csv"
+	case "edx":
+		dataSourceUrl = "data/processed/edx.csv"
 	case "holdout_test":
 		dataSourceUrl = "data/processed/final_holdout_test.csv"
-    }
+	}
 
 	data, err := csvhandler.ReadCsvData(dataSourceUrl, false)
 	if err != nil {
@@ -54,9 +54,9 @@ func GetData(dataSource string) (*dataSet, error) {
 	return dataSet, err
 }
 
-func formatData(records [][]string) (*dataSet, error) {
-	movies := make(map[string]movie)
-	ratings := make(map[string]rating)
+func formatData(records [][]string) (*DataSet, error) {
+	movies := make(map[string]Movie)
+	ratings := make(map[string]Rating)
 
 	for _, row := range records {
 		fmt.Println(row)
@@ -83,21 +83,21 @@ func formatData(records [][]string) (*dataSet, error) {
 		ratingVal := float32(s)
 		yearVal := int(y)
 
-		movies[movieId] = movie{
-			movieId: movieId,
-			title:   title,
-			year: yearVal,
-			genres:  strings.Split(genres, "|"),
+		movies[movieId] = Movie{
+			MovieId: movieId,
+			Title:   title,
+			Year:    yearVal,
+			Genres:  strings.Split(genres, "|"),
 		}
 
-		ratings[userId+"/"+movieId] = rating{
-			movieId: movieId,
-			userId:  userId,
-			rating:  ratingVal,
+		ratings[userId+"/"+movieId] = Rating{
+			MovieId: movieId,
+			UserId:  userId,
+			Value:   ratingVal,
 		}
 	}
 
-	result := dataSet{movies: movies, ratings: ratings}
+	result := DataSet{Movies: movies, Ratings: ratings}
 
 	return &result, nil
 }
