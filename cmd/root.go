@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -14,6 +15,8 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	rootCmd.AddCommand(trainTestSplitCmd)
+	rootCmd.AddCommand(modelv0TrainCmd)
+	rootCmd.AddCommand(modelv0EvaluateCmd)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -26,4 +29,24 @@ func printErrorWithStack(err error) {
 	}
 
 	fmt.Printf("%+v\n", err)
+}
+
+func getDataSourcePath(dataSourceArg string) (string, error) {
+	dataSourceUrl := ""
+	switch dataSourceArg {
+	case "train":
+		dataSourceUrl = "data/trainTest/train.csv"
+	case "test":
+		dataSourceUrl = "data/trainTest/test.csv"
+	case "edx":
+		dataSourceUrl = "data/processed/edx.csv"
+	case "holdout_test":
+		dataSourceUrl = "data/processed/final_holdout_test.csv"
+	}
+
+	if dataSourceUrl == "" {
+		return dataSourceUrl, errors.New("DataSourceUrl is not found.")
+	}
+
+	return dataSourceUrl, nil
 }

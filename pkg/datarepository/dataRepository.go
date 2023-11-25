@@ -1,7 +1,6 @@
 package datarepository
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -27,20 +26,7 @@ type Rating struct {
 	Value   float32
 }
 
-func GetData(dataSource string) (*DataSet, error) {
-	dataSourceUrl := dataSource
-
-	switch dataSource {
-	case "train":
-		dataSourceUrl = "data/trainTest/train.csv"
-	case "test":
-		dataSourceUrl = "data/trainTest/test.csv"
-	case "edx":
-		dataSourceUrl = "data/processed/edx.csv"
-	case "holdout_test":
-		dataSourceUrl = "data/processed/final_holdout_test.csv"
-	}
-
+func GetData(dataSourceUrl string) (*DataSet, error) {
 	data, err := csvhandler.ReadCsvData(dataSourceUrl, false)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -59,7 +45,6 @@ func formatData(records [][]string) (*DataSet, error) {
 	ratings := make(map[string]Rating)
 
 	for _, row := range records {
-		fmt.Println(row)
 		userId := row[0]
 		movieId := row[1]
 		ratingStr := row[2]
@@ -70,13 +55,11 @@ func formatData(records [][]string) (*DataSet, error) {
 
 		s, err := strconv.ParseFloat(ratingStr, 32)
 		if err != nil {
-			fmt.Printf("String %s cannot be converted to float.", ratingStr)
 			return nil, errors.WithStack(err)
 		}
 
 		y, err := strconv.Atoi(yearStr)
 		if err != nil {
-			fmt.Printf("String %s cannot be converted to int.", yearStr)
 			return nil, errors.WithStack(err)
 		}
 
