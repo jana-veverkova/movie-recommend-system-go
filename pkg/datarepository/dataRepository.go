@@ -41,8 +41,7 @@ func GetData(dataSourceUrl string) (*DataSet, error) {
 }
 
 func formatData(records [][]string) (*DataSet, error) {
-	movies := make(map[string]Movie)
-	ratings := make(map[string]Rating)
+	movies, ratings := make(map[string]Movie), make(map[string]Rating)
 
 	for _, row := range records {
 		userId := row[0]

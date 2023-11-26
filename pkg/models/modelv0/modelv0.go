@@ -15,12 +15,12 @@ type modelParams struct {
 	Intercept float32
 }
 
-func Train(dataSourceUrl string) (error) {
+func Train(dataSourceUrl string) error {
 	// this model predicts rating as the total average rating
-	
+
 	data, err := datarepository.GetData(dataSourceUrl)
 	if err != nil {
-		return errors.WithStack(err)		
+		return errors.WithStack(err)
 	}
 
 	params, err := computeParams(data.Ratings)
@@ -31,7 +31,7 @@ func Train(dataSourceUrl string) (error) {
 	_, file := path.Split(dataSourceUrl)
 	fileName := strings.Split(file, ".")[0]
 
-	err = persist.Save(fmt.Sprintf("data/modelParams/modelv0/%s.json",fileName), params)
+	err = persist.Save(fmt.Sprintf("data/modelParams/modelv0/%s.json", fileName), params)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -45,7 +45,7 @@ func Evaluate(trainedOnUrl string, dataSourceUrl string) (*modelevaluation.Summa
 	fileName := strings.Split(file, ".")[0]
 
 	var params modelParams
-	err := persist.Load(fmt.Sprintf("data/modelParams/modelv0/%s.json",fileName), &params)
+	err := persist.Load(fmt.Sprintf("data/modelParams/modelv0/%s.json", fileName), &params)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -53,14 +53,14 @@ func Evaluate(trainedOnUrl string, dataSourceUrl string) (*modelevaluation.Summa
 	// get data for prediction
 	data, err := datarepository.GetData(dataSourceUrl)
 	if err != nil {
-		return nil, errors.WithStack(err)		
+		return nil, errors.WithStack(err)
 	}
 
 	// create predictions
 	predictions := predict(data.Ratings, params)
 
 	// evaluate predictions
-	summary, err := modelevaluation.Evaluate(data.Ratings, predictions)
+	summary, err := modelevaluation.Summarize(data.Ratings, predictions)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -69,7 +69,7 @@ func Evaluate(trainedOnUrl string, dataSourceUrl string) (*modelevaluation.Summa
 
 }
 
-func predict(data map[string]datarepository.Rating, params modelParams) (map[string]float32) {
+func predict(data map[string]datarepository.Rating, params modelParams) map[string]float32 {
 	// make predictions for data based on params
 	predictions := make(map[string]float32)
 
@@ -78,7 +78,7 @@ func predict(data map[string]datarepository.Rating, params modelParams) (map[str
 	}
 
 	return predictions
-}  
+}
 
 func computeParams(ratings map[string]datarepository.Rating) (*modelParams, error) {
 	sum := float32(0)
@@ -92,7 +92,7 @@ func computeParams(ratings map[string]datarepository.Rating) (*modelParams, erro
 	}
 
 	params := modelParams{
-		Intercept: sum/count,
+		Intercept: sum / count,
 	}
 
 	return &params, nil

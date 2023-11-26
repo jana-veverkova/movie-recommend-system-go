@@ -9,7 +9,7 @@ type Summary struct {
 	Rmse float32
 }
 
-func Evaluate(testSet map[string]datarepository.Rating, predictions map[string]float32) (*Summary, error) {
+func Summarize(testSet map[string]datarepository.Rating, predictions map[string]float32) (*Summary, error) {
 	// returns all statistics
 
 	rmse, err := calculateRmse(testSet, predictions)

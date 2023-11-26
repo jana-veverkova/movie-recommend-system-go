@@ -10,8 +10,8 @@ import (
 
 func TestCalculateRmse(t *testing.T) {
 	testSet := map[string]datarepository.Rating{
-		"1/1" : {UserId: "1", MovieId: "1",	Value: 3,},
-		"2/3" : {UserId: "2", MovieId: "3",	Value: 4,},
+		"1/1" : {Value: 3,},
+		"2/3" : {Value: 4,},
 	}
 	predictions := map[string]float32{
 		"1/1": 3.5,
@@ -26,8 +26,8 @@ func TestCalculateRmse(t *testing.T) {
 
 func TestCalculateRmseMissingPrediction(t *testing.T) {
 	testSet := map[string]datarepository.Rating{
-		"1/1" : {UserId: "1", MovieId: "1",	Value: 3,},
-		"2/3" : {UserId: "2", MovieId: "3",	Value: 4,},
+		"1/1" : {Value: 3,},
+		"2/3" : {Value: 4,},
 	}
 	predictions := map[string]float32{
 		"1/1": 3.5,
