@@ -2,75 +2,38 @@ package modelv0
 
 import (
 	"fmt"
-	"path"
-	"strings"
 
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/datarepository"
-	"github.com/jana-veverkova/movie-recommend-system-go/pkg/modelevaluation"
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/persist"
 	"github.com/pkg/errors"
 )
+
+// this model predicts rating as the total average rating
 
 type modelParams struct {
 	Intercept float32
 }
 
-func Train(dataSourceUrl string) error {
-	// this model predicts rating as the total average rating
-
-	data, err := datarepository.GetData(dataSourceUrl)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	params, err := computeParams(data.Ratings)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	_, file := path.Split(dataSourceUrl)
-	fileName := strings.Split(file, ".")[0]
-
-	err = persist.Save(fmt.Sprintf("data/modelParams/modelv0/%s.json", fileName), params)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+type Modelv0 struct {	
 }
 
-func Evaluate(trainedOnUrl string, dataSourceUrl string) (*modelevaluation.Summary, error) {
-	// load parameters
-	_, file := path.Split(trainedOnUrl)
-	fileName := strings.Split(file, ".")[0]
+func (m *Modelv0) GetName() string {
+	return "modelv0"
+}
 
+func (m *Modelv0) Predict(data map[string]datarepository.Rating, fileName string) (map[string]float32, error) {
 	var params modelParams
 	err := persist.Load(fmt.Sprintf("data/modelParams/modelv0/%s.json", fileName), &params)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+	
+	predictions := m.computePredictions(data, params)
 
-	// get data for prediction
-	data, err := datarepository.GetData(dataSourceUrl)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	// create predictions
-	predictions := predict(data.Ratings, params)
-
-	// evaluate predictions
-	summary, err := modelevaluation.Summarize(data.Ratings, predictions)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return summary, nil
-
+	return predictions, nil
 }
 
-func predict(data map[string]datarepository.Rating, params modelParams) map[string]float32 {
-	// make predictions for data based on params
+func (m *Modelv0) computePredictions(data map[string]datarepository.Rating, params modelParams) map[string]float32 {
 	predictions := make(map[string]float32)
 
 	for key, _ := range data {
@@ -80,7 +43,7 @@ func predict(data map[string]datarepository.Rating, params modelParams) map[stri
 	return predictions
 }
 
-func computeParams(ratings map[string]datarepository.Rating) (*modelParams, error) {
+func (m *Modelv0) ComputeParams(ratings map[string]datarepository.Rating) (any, error) {
 	sum := float32(0)
 	count := float32(len(ratings))
 	if count == 0 {

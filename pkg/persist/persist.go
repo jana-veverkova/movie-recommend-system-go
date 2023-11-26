@@ -22,7 +22,7 @@ func Save(path string, v interface{}) error {
 	}
 	defer f.Close()
 
-	b, err := json.MarshalIndent(v, "", "\t")
+	b, err := json.Marshal(v)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -42,5 +42,10 @@ func Load(path string, v interface{}) error {
 	}
 	defer f.Close()
 
-	return json.NewDecoder(f).Decode(v)
-  }
+	b, err := io.ReadAll(f)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return json.Unmarshal(b, v)  
+}

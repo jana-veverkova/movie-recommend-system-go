@@ -9,6 +9,8 @@ import (
 )
 
 func TestComputeParams(t *testing.T) {
+	var m Modelv0
+
 	ratings := map[string]datarepository.Rating{
 		"1": {UserId:  "123", MovieId: "123", Value: 3.5,},
 		"2": {UserId:  "1",	MovieId: "2", Value: 4,},
@@ -16,18 +18,24 @@ func TestComputeParams(t *testing.T) {
 	}
 	expected := (3.5 + 4 + 5) / 3
 
-	actual, err := computeParams(ratings)
+	actualAny, err := m.ComputeParams(ratings)
 	require.NoError(t, err)
+	actual, ok := actualAny.(*modelParams)
+	require.Equal(t, true, ok)
 	require.Equal(t, true, math.Abs(expected-float64(actual.Intercept)) <= 0.001)
 }
 
 func TestComputeParamsEmptySet(t *testing.T) {
+	var m Modelv0
+	
 	ratings := map[string]datarepository.Rating{}
-	_, err := computeParams(ratings)
+	_, err := m.ComputeParams(ratings)
 	require.Error(t, err)
 }
 
-func TestPredict(t *testing.T) {
+func TestComputePredictions(t *testing.T) {
+	var m Modelv0
+	
 	intercept := float32(0.5)
 	data := map[string]datarepository.Rating{
 		"1": {UserId:  "123", MovieId: "123", Value: 3.5,},
@@ -38,5 +46,5 @@ func TestPredict(t *testing.T) {
 		"2": 0.5,
 	}
 
-	require.Equal(t, expected, predict(data, modelParams{Intercept: intercept}))
+	require.Equal(t, expected, m.computePredictions(data, modelParams{Intercept: intercept}))
 }

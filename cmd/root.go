@@ -17,6 +17,8 @@ func Execute() {
 	rootCmd.AddCommand(trainTestSplitCmd)
 	rootCmd.AddCommand(modelv0TrainCmd)
 	rootCmd.AddCommand(modelv0EvaluateCmd)
+	rootCmd.AddCommand(modelv2TrainCmd)
+	rootCmd.AddCommand(modelv2EvaluateCmd)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
