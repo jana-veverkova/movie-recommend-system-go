@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models"
+	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models/modelv0"
+	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models/modelv2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -51,4 +54,26 @@ func getDataSourcePath(dataSourceArg string) (string, error) {
 	}
 
 	return dataSourceUrl, nil
+}
+
+func getModelByName(modelName string) (models.Model, error) {
+	var m1 modelv0.Modelv0
+	var m2 modelv2.Modelv2
+
+	ms := []models.Model{
+		&m1, &m2,
+	}
+
+	var m models.Model
+	for _, m = range(ms) {
+		if m.GetName() == modelName {
+			return m, nil
+		}
+	}
+	
+	if m == nil {
+		return nil, errors.New("Model not found.")
+	}
+
+	return nil, nil
 }
