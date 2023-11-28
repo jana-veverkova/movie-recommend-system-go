@@ -42,26 +42,10 @@ func TestFormatData(t *testing.T) {
 			},
 		},
 		Ratings: map[string]Rating{
-			"1/292": {
-				MovieId: "292",
-				UserId:  "1",
-				Value:  5,
-			},
-			"1/589": {
-				MovieId: "589",
-				UserId:  "1",
-				Value:  5,
-			},
-			"2/539": {
-				MovieId: "539",
-				UserId:  "2",
-				Value:  3,
-			},
-			"3/540": {
-				MovieId: "540",
-				UserId:  "3",
-				Value:  2.5,
-			},
+			"1/292": {MovieId: "292", UserId:  "1", Value:  5,},
+			"1/589": {MovieId: "589", UserId:  "1",	Value:  5,},
+			"2/539": {MovieId: "539", UserId:  "2", Value:  3,},
+			"3/540": {MovieId: "540", UserId:  "3",	Value:  2.5,},
 		},
 	}
 
