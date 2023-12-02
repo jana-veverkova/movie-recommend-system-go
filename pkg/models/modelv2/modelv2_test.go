@@ -12,10 +12,10 @@ import (
 func TestComputeParams(t *testing.T) {
 	var m Modelv2
 
-	ratings := map[string]datarepository.Rating{
-		"1": {UserId: "1", MovieId: "123", Value: 1},
-		"2": {UserId: "1", MovieId: "2", Value: 3},
-		"3": {UserId: "2", MovieId: "2", Value: 5},
+	ratings := []*datarepository.Rating{
+		{UserId: "1", MovieId: "123", Value: 1},
+		{UserId: "1", MovieId: "2", Value: 3},
+		{UserId: "2", MovieId: "2", Value: 5},
 	}
 	intercept := 3
 	expected := modelParams{
@@ -30,7 +30,7 @@ func TestComputeParams(t *testing.T) {
 		},
 	}
 
-	actualAny, err := m.ComputeParams(ratings)
+	actualAny, err := m.ComputeParams(&datarepository.DataSet{Ratings: ratings})
 	require.NoError(t, err)
 
 	actual, ok := actualAny.(*modelParams)
@@ -51,8 +51,8 @@ func TestComputeParams(t *testing.T) {
 func TestComputeParamsEmptySet(t *testing.T) {
 	var m Modelv2
 
-	ratings := map[string]datarepository.Rating{}
-	_, err := m.ComputeParams(ratings)
+	dataSet := datarepository.DataSet{}
+	_, err := m.ComputeParams(&dataSet)
 	require.Error(t, err)
 }
 
@@ -70,16 +70,12 @@ func TestComputePredictions(t *testing.T) {
 			"2": -1.5,
 		},
 	}
-	data := map[string]datarepository.Rating{
-		"1": {UserId: "1", MovieId: "123", Value: 3.5},
-		"2": {UserId: "1", MovieId: "2", Value: 4},
-		"3": {UserId: "2", MovieId: "2", Value: 5},
+	data := []*datarepository.Rating{
+		{UserId: "1", MovieId: "123", Value: 3.5},
+		{UserId: "1", MovieId: "2", Value: 4},
+		{UserId: "2", MovieId: "2", Value: 5},
 	}
-	expected := map[string]float32{
-		"1": 0.5 - 1 + 1,
-		"2": 0.5 + 3 + 1,
-		"3": 0.5 + 3 - 1.5,
-	}
+	expected := []float32{0.5 - 1 + 1, 0.5 + 3 + 1, 0.5 + 3 - 1.5}
 
 	require.Equal(t, expected, m.computePredictions(data, params))
 }

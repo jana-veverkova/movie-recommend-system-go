@@ -2,40 +2,38 @@ package traintestsplit
 
 import (
 	"math/rand"
+	"sync"
+	"time"
 
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/csvhandler"
-	"github.com/pkg/errors"
 )
 
-func Split(sourceUrl string, targetDir string) error {
-	records, err := csvhandler.ReadCsvData(sourceUrl, true)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+func Split(sourceUrl string, targetDir string) {
+	var wgSender sync.WaitGroup
+	var wgReceiver sync.WaitGroup
+	var wgWriter sync.WaitGroup
 
-	header := make([]string, 0)
-	trainSet := make([][]string, 0)
-	testSet := make([][]string, 0)
+	chRecords := csvhandler.ReadCsvData(sourceUrl, true, &wgSender)
+	chWriterTrain := csvhandler.WriteCsvData(targetDir+"/train.csv", true, &wgWriter)
+	chWriterTest := csvhandler.WriteCsvData(targetDir+"/test.csv", true, &wgWriter)
 
-	for ix, row := range records {
-		if ix == 0 {
-			header = row
-		} else if rand.Intn(10) == 0 {
-			testSet = append(testSet, row)
-		} else {
-			trainSet = append(trainSet, row)
+	wgReceiver.Add(1)
+	go func() {
+		defer wgReceiver.Done()
+
+		for row := range chRecords {
+			if rand.Intn(5) == 0 {
+				chWriterTest <- row
+			} else {
+				chWriterTrain <- row
+			}
 		}
-	}
+	}()
 
-	err = csvhandler.WriteCsvData(trainSet, targetDir+"/train.csv", header)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	err = csvhandler.WriteCsvData(testSet, targetDir+"/test.csv", header)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	return err
+	wgSender.Wait()
+	wgReceiver.Wait()
+	close(chWriterTest)
+	close(chWriterTrain)
+	wgWriter.Wait()
+	time.Sleep(5 * time.Second)
 }

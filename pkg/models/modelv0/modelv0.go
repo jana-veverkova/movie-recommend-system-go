@@ -21,36 +21,36 @@ func (m *Modelv0) GetName() string {
 	return "modelv0"
 }
 
-func (m *Modelv0) Predict(data map[string]datarepository.Rating, fileName string) (map[string]float32, error) {
+func (m *Modelv0) Predict(data *datarepository.DataSet, fileName string) ([]float32, error) {
 	var params modelParams
 	err := persist.Load(fmt.Sprintf("data/modelParams/modelv0/%s.json", fileName), &params)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 	
-	predictions := m.computePredictions(data, params)
+	predictions := m.computePredictions(data.Ratings, params)
 
 	return predictions, nil
 }
 
-func (m *Modelv0) computePredictions(data map[string]datarepository.Rating, params modelParams) map[string]float32 {
-	predictions := make(map[string]float32)
+func (m *Modelv0) computePredictions(data []*datarepository.Rating, params modelParams) []float32 {
+	predictions := make([]float32, 0)
 
-	for key, _ := range data {
-		predictions[key] = params.Intercept
+	for _ = range data {
+		predictions = append(predictions, params.Intercept)
 	}
 
 	return predictions
 }
 
-func (m *Modelv0) ComputeParams(ratings map[string]datarepository.Rating) (any, error) {
+func (m *Modelv0) ComputeParams(data *datarepository.DataSet) (any, error) {
 	sum := float32(0)
-	count := float32(len(ratings))
+	count := float32(len(data.Ratings))
 	if count == 0 {
 		return nil, errors.New("Length of dataset is 0. Cannot divide by 0.")
 	}
 
-	for _, rating := range ratings {
+	for _, rating := range data.Ratings {
 		sum = sum + rating.Value
 	}
 

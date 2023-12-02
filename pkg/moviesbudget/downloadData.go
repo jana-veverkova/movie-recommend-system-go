@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/pkg/errors"
 	"golang.org/x/net/html"
@@ -54,28 +55,46 @@ func readHtmlTable(sourceUrl string, ch chan []string, wg *sync.WaitGroup) {
 
 	row := make([]string, 0)
 
-	depth := 0
+	isTr := false
+	isTd := false
 	for {
 		tt := z.Next()
 		if tt == html.ErrorToken {
-			break
+			if z.Err() == io.EOF {
+				return
+			}
+			fmt.Printf("Error: %v", z.Err())
+			return
 		}
+
 		switch tt {
 		case html.TextToken:
-			if depth > 0 {
+			if isTr && isTd {
 				re := regexp.MustCompile(`\r?\n`)
 				inp := re.ReplaceAllString(z.Token().Data, " ")
 				row = append(row, inp)
 			}
-		case html.StartTagToken, html.EndTagToken:
-			if z.Token().Data == "tr" {
-				if tt == html.StartTagToken {
-					depth++
-					row = nil
-				} else {
-					depth--
+
+		case html.StartTagToken:
+			t := z.Token()
+			switch t.Data {
+			case "tr":
+				isTr = true
+				row = nil
+			case "td":
+				isTd = true
+			}
+			
+		case html.EndTagToken:
+			t := z.Token()
+			switch t.Data {
+			case "tr":
+				isTr = false
+				if row != nil {
 					ch <- row
 				}
+			case "td":
+				isTd = false
 			}
 		}
 	}
@@ -94,10 +113,21 @@ func writer(fileName string, ch chan []string, wg *sync.WaitGroup) {
 	csvwriter := csv.NewWriter(csvFile)
 
 	for row := range ch {
-		err = csvwriter.Write(row)
+		err = csvwriter.Write(removeNonprintables(row))
 		if err != nil {
 			fmt.Println(errors.WithStack(err))
 		}
 		csvwriter.Flush()
 	}
+}
+
+func removeNonprintables(items []string) []string {
+	result := make([]string, 0)
+	for _, item := range items {
+		item = strings.Replace(item, "\u00a0", "", 100)
+		result = append(result, strings.TrimFunc(item, func(r rune) bool {
+			return !unicode.IsGraphic(r)
+		}))
+	}
+	return result
 }

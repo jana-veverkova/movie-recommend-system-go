@@ -7,6 +7,8 @@ import (
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models"
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models/modelv0"
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models/modelv2"
+	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models/modelv2B"
+	"github.com/jana-veverkova/movie-recommend-system-go/pkg/models/modelv4"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -21,6 +23,8 @@ func Execute() {
 	rootCmd.AddCommand(modelTrainCmd)
 	rootCmd.AddCommand(modelEvaluateCmd)
 	rootCmd.AddCommand(downloadBudgetCmd)
+	rootCmd.AddCommand(processBudgetCmd)
+	rootCmd.AddCommand(downloadCastCmd)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -58,18 +62,20 @@ func getDataSourcePath(dataSourceArg string) (string, error) {
 func getModelByName(modelName string) (models.Model, error) {
 	var m1 modelv0.Modelv0
 	var m2 modelv2.Modelv2
+	var m3 modelv2B.Modelv2B
+	var m4 modelv4.Modelv4
 
 	ms := []models.Model{
-		&m1, &m2,
+		&m1, &m2, &m3, &m4,
 	}
 
 	var m models.Model
-	for _, m = range(ms) {
+	for _, m = range ms {
 		if m.GetName() == modelName {
 			return m, nil
 		}
 	}
-	
+
 	if m == nil {
 		return nil, errors.New("Model not found.")
 	}
