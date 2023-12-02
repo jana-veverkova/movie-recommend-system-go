@@ -9,12 +9,7 @@ var trainTestSplitCmd = &cobra.Command{
 	Use:   "train-test-split",
 	Short: "Splits data into train and test set.",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		err := traintestsplit.Split("data/processed/edx.csv", "data/trainTest")
-		if err != nil {
-			printErrorWithStack(err)
-			return err
-		}
-
+		traintestsplit.Split("data/processed/edx.csv", "data/trainTest")
 		return nil
 	},
 }

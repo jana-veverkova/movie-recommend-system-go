@@ -10,7 +10,7 @@ import (
 var modelTrainCmd = &cobra.Command{
 	Use:       "model-train",
 	Short:     "Trains model based on given arguments.",
-	ValidArgs: []string{"modelv0", "modelv2", "train", "test", "edx", "holdout_test"},
+	ValidArgs: []string{"modelv0", "modelv2", "modelv2B", "modelv4", "train", "test", "edx", "holdout_test"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := cobra.ExactArgs(2)(cmd, args); err != nil {
 			return err
@@ -45,7 +45,7 @@ var modelEvaluateCmd = &cobra.Command{
 	Use:       "model-evaluate",
 	Short:     "Evaluates model base on arguments.",
 	Long:      "Evaluates model. Arg 1 => model name, arg 2 => dataset used for training, arg 3 => dataset used for prediction.",
-	ValidArgs: []string{"modelv0", "modelv2", "train", "test", "edx", "holdout_test"},
+	ValidArgs: []string{"modelv0", "modelv2", "modelv2B", "modelv4", "train", "test", "edx", "holdout_test"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := cobra.ExactArgs(3)(cmd, args); err != nil {
 			return err
@@ -79,7 +79,8 @@ var modelEvaluateCmd = &cobra.Command{
 		}
 
 		fmt.Println("Summary:")
-		fmt.Printf("   rmse: %.2f \n", summary.Rmse)
+		fmt.Printf("   Rmse: %.5f \n", summary.Rmse)
+		fmt.Printf("   Mae: %.5f \n", summary.Mae)
 
 		return nil
 	},

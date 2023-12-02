@@ -1,7 +1,26 @@
 package main
 
-import "github.com/jana-veverkova/movie-recommend-system-go/cmd"
+import (
+	"flag"
+	"log"
+	"os"
+	"runtime/pprof"
+
+	"github.com/jana-veverkova/movie-recommend-system-go/cmd"
+)
+
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
+	flag.Parse()
+    if *cpuprofile != "" {
+        f, err := os.Create(*cpuprofile)
+        if err != nil {
+            log.Fatal(err)
+        }
+        pprof.StartCPUProfile(f)
+        defer pprof.StopCPUProfile()
+    }
+	
 	cmd.Execute()
 }

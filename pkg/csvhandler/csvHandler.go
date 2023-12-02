@@ -2,53 +2,101 @@ package csvhandler
 
 import (
 	"encoding/csv"
+	"fmt"
+	"io"
 	"os"
+	"sync"
 
 	"github.com/pkg/errors"
 )
 
-func ReadCsvData(url string, withHeader bool) ([][]string, error) {
-	file, err := os.Open(url)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
+var lock sync.Mutex
 
-	defer file.Close()
+func ReadCsvData(url string, withHeader bool, wg *sync.WaitGroup) <-chan []string {
+	chRecords := make(chan []string, 100)
 
-	reader := csv.NewReader(file)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 
-	records, err := reader.ReadAll()
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
+		file, err := os.Open(url)
+		if err != nil {
+			fmt.Println(errors.WithStack(err))
+			return
+		}
 
-	if !withHeader {
-		// remove header
-		records = records[1:]
-	}
+		defer file.Close()
 
-	return records, err
+		reader := csv.NewReader(file)
+
+		if !withHeader {
+			_, err := reader.Read()
+			if err != nil {
+				if err == io.EOF {
+					return
+				}
+				fmt.Println(errors.WithStack(err))
+				return
+			}
+		}
+
+		for {
+			record, err := reader.Read()
+			if err != nil {
+				if err == io.EOF {
+					close(chRecords)
+					return
+				}
+
+				fmt.Println(errors.WithStack(err))
+			}
+
+			chRecords <- record
+		}
+	}()
+
+	return chRecords
 }
 
-func WriteCsvData(records [][]string, fileName string, header []string) error {
-	csvFile, err := os.Create(fileName)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+func WriteCsvData(fileName string, rewriteFile bool, wg *sync.WaitGroup) chan []string {
+	chRecords := make(chan []string)
 
-	defer csvFile.Close()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 
-	csvwriter := csv.NewWriter(csvFile)
+		lock.Lock()
+		defer lock.Unlock()
 
-	err = csvwriter.Write(header)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+		var csvFile *os.File
 
-	err = csvwriter.WriteAll(records)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+		if rewriteFile {
+			f, err := os.Create(fileName)
+			if err != nil {
+				fmt.Println(errors.WithStack(err))
+				return
+			}
+			csvFile = f
+		} else {
+			f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0660)
+			if err != nil {
+				fmt.Println(errors.WithStack(err))
+				return
+			}
+			csvFile = f
+		}
 
-	return err
+		defer csvFile.Close()
+
+		csvwriter := csv.NewWriter(csvFile)
+
+		for row := range chRecords {
+			err := csvwriter.Write(row)
+			if err != nil {
+				fmt.Println(errors.WithStack(err))
+			}
+		}
+	}()
+
+	return chRecords
 }
