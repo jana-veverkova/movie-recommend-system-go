@@ -26,13 +26,13 @@ $m_{ij}$ is an effect of user $j$ calculated as an average of $y_{ij} - a - m_{i
 Summary statistics of this model based on test set are: (TODO)
 
 
-### Modelv2B (2 variables with lambda coeffient)
+### Modelv2B (2 variables with lambda coefficient)
 
 Model 
 ```math
 $$y_{ij} = a + m_{i} + u_{j} $$
 ```
-was adjusted so that estimates of movies and users effects were averages adjusted by lambda coefficients (sums were divided by number of observations + lambda).
+was adjusted so that the estimates of the movies and users effects were averages adjusted by lambda coefficients (sums were divided by the number of observations + lambda).
 
 ### Modelv4 (4 variables)
 
