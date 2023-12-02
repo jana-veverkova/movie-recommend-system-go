@@ -42,7 +42,6 @@ func (m *Modelv4) computePredictions(data *datarepository.DataSet, params modelP
 		a2 := params.ActorsEffect[data.Movies[r.MovieId].Actor2]
 		m := params.MovieEffect[r.MovieId]
 		u := params.UserEffect[r.UserId]
-		fmt.Println(d, a1, a2, m, u)
 		predictions = append(predictions,
 			params.Intercept+d+(a1+a2)/2+m+u)
 	}
