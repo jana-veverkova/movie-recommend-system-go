@@ -21,18 +21,26 @@ Summary statistics of this model based on test set are: (TODO)
 $$y_{ij} = a + m_{i} + u_{j} $$
 ```
 where $m_{ij}$ is an effect of movie $i$ calculated as an average of $y_{ij} - a$ for every $j$ and 
-$m_{ij}$ is an effect of user $j$ calculated as an average of $y_{ij} - a - m_{ij}$ for every $i$
+$m_{ij}$ is an effect of user $j$ calculated as an average of $y_{ij} - a - m_{ij}$ for every $i$.
 
 Summary statistics of this model based on test set are: (TODO)
 
 
-## Modelv2B (2 variables with lambda coeffient)
+### Modelv2B (2 variables with lambda coeffient)
 
 Model 
 ```math
 $$y_{ij} = a + m_{i} + u_{j} $$
 ```
 was adjusted so that estimates of movies and users effects were averages adjusted by lambda coefficients (sums were divided by number of observations + lambda).
+
+### Modelv4 (4 variables)
+
+Model 
+```math
+$$y_{ij} = a + d_{i} + (a1_{i} + a2_{i})/2 + m_{i} + u_{j} $$
+```
+were $d_{i} is the director's effect, $a1_{i}$ and $a2_{i}$ are m-0k=05effects of two actors chosen as main by csfd.cz.
 
 
 
