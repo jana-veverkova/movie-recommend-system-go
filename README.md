@@ -38,9 +38,9 @@ was adjusted so that estimates of movies and users effects were averages adjuste
 
 Model 
 ```math
-$$y_{ij} = a + d_{i} + (a1_{i} + a2_{i})/2 + m_{i} + u_{j} $$
+$$y_{ij} = a + d_{i} + (a_{1i} + a_{2i})/2 + m_{i} + u_{j} $$
 ```
-were $d_{i} is the director's effect, $a1_{i}$ and $a2_{i}$ are m-0k=05effects of two actors chosen as main by csfd.cz.
+were $d_{i}$ is the director's effect, $a_{1i}$ and $a_{2i}$ are the effects of two main actors.
 
 
 
