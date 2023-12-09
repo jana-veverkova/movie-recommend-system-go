@@ -3,7 +3,6 @@ package traintestsplit
 import (
 	"math/rand"
 	"sync"
-	"time"
 
 	"github.com/jana-veverkova/movie-recommend-system-go/pkg/csvhandler"
 )
@@ -35,5 +34,4 @@ func Split(sourceUrl string, targetDir string) {
 	close(chWriterTest)
 	close(chWriterTrain)
 	wgWriter.Wait()
-	time.Sleep(5 * time.Second)
 }

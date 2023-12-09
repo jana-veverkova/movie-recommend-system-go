@@ -95,6 +95,7 @@ func WriteCsvData(fileName string, rewriteFile bool, wg *sync.WaitGroup) chan []
 			if err != nil {
 				fmt.Println(errors.WithStack(err))
 			}
+			csvwriter.Flush()
 		}
 	}()
 
